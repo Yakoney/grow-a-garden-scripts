@@ -1,5 +1,5 @@
--- VisibilityUI by Yakoney - Fixed for Loadstring Execution
--- Auto‑farm GUI setup (placeholder for Grow a Garden)
+-- VisibilityUI by Yakoney - Fully working template for Loadstring Execution
+-- Auto-farm GUI setup (example for a generic farming game)
 
 --// Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,7 +9,6 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
-local Leaderstats = LocalPlayer:WaitForChild("leaderstats")
 local Backpack = LocalPlayer:WaitForChild("Backpack")
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
@@ -26,12 +25,10 @@ local Accent = {
     Brown = Color3.fromRGB(26, 20, 8),
 }
 
--- Initialize GUI
-if PrefabsId == "rbxassetid://" then
-    warn("ReGui.PrefabsId is missing or invalid.")
-end
+-- Initialize GUI Prefabs safely
+local success, prefab = pcall(function() return InsertService:LoadLocalAsset(PrefabsId) end)
+ReGui:Init({ Prefabs = success and prefab or nil })
 
-ReGui:Init({ Prefabs = pcall(InsertService.LoadLocalAsset, InsertService, PrefabsId) and InsertService:LoadLocalAsset(PrefabsId) or nil })
 ReGui:DefineTheme("VisibilityUI", {
     WindowBg = Accent.Brown,
     TitleBarBg = Accent.DarkGreen,
@@ -45,53 +42,19 @@ ReGui:DefineTheme("VisibilityUI", {
     SliderGrab = Accent.Green,
 })
 
--- Placeholder globals
+-- Toggle states
 local AutoPlant, AutoHarvest, AutoSell, NoClip = false, false, false, false
 
--- Placeholder functions to avoid errors
-function GetInvCrops() return {} end
-function SellInventory() warn("SellInventory not implemented yet.") end
-function StartServices() warn("StartServices not implemented yet.") end
+-- ** Customize these for your game **
 
--- Create main window
-local function CreateWindow()
-    local Window = ReGui:Window({
-        Title = "VisibilityUI by Yakoney",
-        Theme = "VisibilityUI",
-        Size = UDim2.fromOffset(300, 200),
-    })
-    return Window
-end
+-- Example: Remote events/functions (update with your game's remote names)
+local PlantSeedEvent = ReplicatedStorage:WaitForChild("PlantSeed") -- change if needed
+local HarvestCropEvent = ReplicatedStorage:WaitForChild("HarvestCrop") -- change if needed
+local SellCropsEvent = ReplicatedStorage:WaitForChild("SellCrops") -- change if needed
 
-local Window = CreateWindow()
-
--- Toolbar toggles
-Window:Toggle({ Text = "Auto Plant", Default = false, Callback = function(v) AutoPlant = v end })
-Window:Toggle({ Text = "Auto Harvest", Default = false, Callback = function(v) AutoHarvest = v end })
-Window:Toggle({ Text = "Auto Sell", Default = false, Callback = function(v) AutoSell = v end })
-Window:Toggle({ Text = "No Clip", Default = false, Callback = function(v) NoClip = v end })
-
--- Core logic connections
-RunService.Stepped:Connect(function()
-    if NoClip then
-        local char = LocalPlayer.Character
-        if char then
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then part.CanCollide = false end
-            end
-        end
-    end
-end)
-
-Backpack.ChildAdded:Connect(function()
-    if AutoSell then
-        if #GetInvCrops() >= (SellInventory and 1 or 0) then
-            SellInventory()
-        end
-    end
-end)
-
--- Starting up automation routines
-StartServices()
-
-print("VisibilityUI by Yakoney loaded successfully")
+-- Example: how to identify crops/seeds (customize based on your game)
+local function GetInvCrops()
+    local crops = {}
+    for _, item in ipairs(Backpack:GetChildren()) do
+        -- Example: crop items contain "Crop" in their name
+        if item:IsA("Tool") and string.find(item.Name, "Crop
