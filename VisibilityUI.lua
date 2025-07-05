@@ -1,7 +1,6 @@
---[[
-    VisibilityUI by Yakoney
-    Created for Grow a Garden or similar Roblox games.
-    Toggles transparency of common objects.
+--[[ VisibilityUI by Yakoney
+     Created for Grow a Garden or similar Roblox games.
+     Toggles transparency of common objects.
 ]]
 
 -- UI Setup
@@ -19,7 +18,7 @@ Frame.Parent = ScreenGui
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 30)
 Title.BackgroundTransparency = 1
-Title.Text = "VisibilityUI"
+Title.Text = "VisibilityUI by Yakoney"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 20
@@ -40,4 +39,15 @@ local transparent = false
 Toggle.MouseButton1Click:Connect(function()
     transparent = not transparent
     for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") and obj.Transpar
+        if obj:IsA("BasePart") then
+            if transparent then
+                obj.Transparency = 0.6
+                obj.CanCollide = false
+            else
+                obj.Transparency = 0
+                obj.CanCollide = true
+            end
+        end
+    end
+    Toggle.Text = transparent and "Restore Visibility" or "Toggle Transparency"
+end)
